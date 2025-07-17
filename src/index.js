@@ -79,18 +79,9 @@ export class Select extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (
-      !this.props.compareValuesFunc(prevProps.values, this.props.values) &&
-      this.props.compareValuesFunc(prevProps.values, prevState.values) &&
       !this.props.compareValuesFunc(this.state.values, this.props.values)
     ) {
-      this.setState(
-        {
-          values: this.props.values
-        },
-        () => {
-          this.props.onChange(this.state.values);
-        }
-      );
+      this.setState({ values: this.props.values });
       this.updateSelectBounds();
     }
 
@@ -99,8 +90,7 @@ export class Select extends Component {
     }
 
     if (
-      prevState.values !== this.state.values &&
-      !this.props.compareValuesFunc(this.props.values, this.state.values)
+      !this.props.compareValuesFunc(prevState.values, this.state.values)
     ) {
       this.props.onChange(this.state.values);
       this.updateSelectBounds();
