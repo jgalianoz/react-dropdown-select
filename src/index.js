@@ -80,7 +80,8 @@ export class Select extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (
       !this.props.compareValuesFunc(prevProps.values, this.props.values) &&
-      this.props.compareValuesFunc(prevProps.values, prevState.values)
+      this.props.compareValuesFunc(prevProps.values, prevState.values) &&
+      !this.props.compareValuesFunc(this.state.values, this.props.values)
     ) {
       this.setState(
         {
