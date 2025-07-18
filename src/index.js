@@ -78,10 +78,21 @@ export class Select extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (
-      !this.props.compareValuesFunc(this.state.values, this.props.values)
-    ) {
-      this.setState({ values: this.props.values });
+    const propsValuesChanged = !this.props.compareValuesFunc(prevProps.values, this.props.values);
+    const stateValuesChanged = !this.props.compareValuesFunc(prevState.values, this.state.values);
+
+    // Handle props values change - update state without calling onChange
+    if (propsValuesChanged && this.props.compareValuesFunc(prevProps.values, prevState.values)) {
+      this.setState({
+        values: this.props.values
+      });
+      this.updateSelectBounds();
+      return; // Exit early to prevent other updates in the same cycle
+    }
+
+    // Handle state values change - call onChange only if values actually changed
+    if (stateValuesChanged && !propsValuesChanged) {
+      this.props.onChange(this.state.values);
       this.updateSelectBounds();
     }
 
@@ -89,18 +100,11 @@ export class Select extends Component {
       this.setState({ searchResults: this.searchResults() });
     }
 
-    if (
-      !this.props.compareValuesFunc(prevState.values, this.state.values)
-    ) {
-      this.props.onChange(this.state.values);
-      this.updateSelectBounds();
-    }
-
     if (prevState.search !== this.state.search) {
       this.updateSelectBounds();
     }
 
-    if (prevState.values !== this.state.values && this.props.closeOnSelect) {
+    if (stateValuesChanged && this.props.closeOnSelect) {
       this.dropDown('close');
     }
 
@@ -249,7 +253,7 @@ export class Select extends Component {
     this.setState({
       values
     });
-    this.props.onDeselect(values)
+    this.props.onDeselect(values);
   };
 
   setSearch = (event) => {
